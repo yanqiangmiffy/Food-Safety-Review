@@ -132,7 +132,7 @@ test_pred = np.zeros((len(test), 2))
 
 skf = StratifiedKFold(n_splits=5, random_state=52, shuffle=True)
 for i, (train_index, valid_index) in enumerate(skf.split(x_train, train['label'])):
-    print("n@{} fold".format(i + 1))
+    print("n@:{}fold".format(i + 1))
     X_train = x_train[train_index]
     X_valid = x_train[valid_index]
     y_tr = y_train[train_index]
