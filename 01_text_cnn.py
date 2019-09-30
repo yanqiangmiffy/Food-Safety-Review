@@ -14,6 +14,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import classification_report, accuracy_score, f1_score
 import ipykernel
 
+
 def token(text):
     """
     实现分词
@@ -43,6 +44,12 @@ def train_w2v(text_list=None, output_vector='data/w2v.txt'):
 train = pd.read_csv('data/train.csv', sep='\t')
 test = pd.read_csv('data/test_new.csv')
 sub = pd.read_csv('data/sample.csv')
+
+# 数据处理 复制label为1文本
+# index = train.label == 1
+# print(index)
+# train[index]
+# train.['comment'] = train[index]['comment'].apply(lambda x: x +'。'+ x)
 # 全量数据
 train['id'] = [i for i in range(len(train))]
 test['label'] = [-1 for i in range(len(test))]
@@ -153,4 +160,5 @@ sub.to_csv('result/cnn.csv', index=None)
 labels = np.argmax(train_pred, axis=1)
 train['pred'] = labels
 train.to_excel('result/train.xlsx', index=None)
-print(classification_report(train['label'].values,train['pred'].values))
+print(classification_report(train['label'].values, train['pred'].values))
+print(f1_score(train['label'].values, train['pred'].values))

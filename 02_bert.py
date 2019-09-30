@@ -275,7 +275,7 @@ def run_cv():
             verbose=True
         )
         # bert_model.load_weights("data/checkpoint_%d.hdf5" % (j))
-        bert_model.save_weights("data/checkpoint_%d.hdf5" % (j))
+        # bert_model.save_weights("models/checkpoint_%d.hdf5" % (j))
         test_y = bert_model.predict_generator(valid_D.__iter__(), steps=len(valid_D), verbose=1)
         oof[te_idx] = test_y
         del train_D, valid_D
@@ -304,7 +304,7 @@ def run_cv():
     result['label'] = result['labels'].map(label_map_r)
     print(result)
 
-    result[['id', 'label']].to_csv('./baseline_bert_{}_{}.csv'.format(n_flod, str(np.mean(xx_cv)).split('.')[1]),
+    result[['id', 'label']].to_csv('./result/baseline_bert_{}_{}.csv'.format(n_flod, str(np.mean(xx_cv)).split('.')[1]),
                                    index=False)
     end_time = time.time()
     print("共耗时：", end_time - start_time)
