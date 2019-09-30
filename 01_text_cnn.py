@@ -56,7 +56,7 @@ test['label'] = [-1 for i in range(len(test))]
 df = pd.concat([train, test], sort=False)
 df['token_text'] = df['comment'].apply(lambda x: token(x))
 texts = df['token_text'].values.tolist()
-train_w2v(texts)
+# train_w2v(texts)
 
 # 构建词汇表
 tokenizer = Tokenizer()
@@ -89,7 +89,7 @@ def create_embedding(word_index, w2v_file):
     """
     embedding_index = {}
     f = open(w2v_file, 'r', encoding='utf-8')
-    next(f)
+    next(f)  # 下一行
     for line in f:
         values = line.split()
         word = values[0]
@@ -143,7 +143,8 @@ for i, (train_index, valid_index) in enumerate(skf.split(x_train, train['label']
                   optimizer='rmsprop',
                   metrics=['acc'])
     model.summary()
-    checkpoint = ModelCheckpoint(filepath='models/cnn_text_{}.h5'.format(i + 1), monitor='val_loss',
+    checkpoint = ModelCheckpoint(filepath='models/cnn_text_{}.h5'.format(i + 1),
+                                 monitor='val_loss',
                                  verbose=1, save_best_only=True)
     history = model.fit(X_train, y_tr,
                         validation_data=(X_valid, y_val),
@@ -157,8 +158,15 @@ for i, (train_index, valid_index) in enumerate(skf.split(x_train, train['label']
 labels = np.argmax(test_pred, axis=1)
 sub['label'] = labels
 sub.to_csv('result/cnn.csv', index=None)
+
+# 训练数据预测结果
+# 概率
+oof_df = pd.DataFrame(train_pred)
+train = pd.concat([train, oof_df], axis=1)
+# 标签
 labels = np.argmax(train_pred, axis=1)
 train['pred'] = labels
+# 分类报告
 train.to_excel('result/train.xlsx', index=None)
 print(classification_report(train['label'].values, train['pred'].values))
 print(f1_score(train['label'].values, train['pred'].values))
