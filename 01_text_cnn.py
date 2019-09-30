@@ -121,22 +121,24 @@ def create_text_cnn():
 
 
 model = create_text_cnn()
-# model.compile(loss='categorical_crossentropy',
-#               optimizer='rmsprop',
-#               metrics=['acc'])
-# model.summary()
-# checkpoint = ModelCheckpoint(filepath='data/cnn_text.h5', monitor='val_loss', verbose=1, save_best_only=True)
-# history = model.fit(x_train, y_train,
-#                     validation_data=(x_train, y_train),
-#                     epochs=20, batch_size=32,
-#                     callbacks=[checkpoint])
+model.compile(loss='categorical_crossentropy',
+              optimizer='rmsprop',
+              metrics=['acc'])
+model.summary()
+checkpoint = ModelCheckpoint(filepath='models/cnn_text.h5', monitor='val_loss',
+                             verbose=1, save_best_only=True)
+history = model.fit(x_train, y_train,
+                    validation_data=(x_train, y_train),
+                    epochs=20, batch_size=32,
+                    callbacks=[checkpoint])
 
 
 def predict():
-    model.load_weights('data/cnn_text.h5')
+    model.load_weights('models/cnn_text.h5')
     preds = model.predict(x_test)
     labels = np.argmax(preds, axis=1)
     sub['label'] = labels
-    sub.to_csv('cnn.csv', index=None)
+    sub.to_csv('result/cnn.csv', index=None)
+
 
 predict()

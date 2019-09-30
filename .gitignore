@@ -1,7 +1,9 @@
 .ipynb_checkpoints/
 models/
 __pychache__/
+.idea/
 data/checkpoint_0.hdf5
 data/checkpoint_1.hdf5
 data/checkpoint_2.hdf5
 data/checkpoint_3.hdf5
+data/checkpoint_4.hdf5

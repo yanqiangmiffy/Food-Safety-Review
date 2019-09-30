@@ -186,20 +186,21 @@ def pre_process(text):
     return ' '.join(results)
 
 
-maxlen = 200
-# config_path = './roeberta_zh_L-24_H-1024_A-16/bert_config_large.json'
-# checkpoint_path = './roeberta_zh_L-24_H-1024_A-16/roberta_zh_large_model.ckpt'
-# dict_path = './roeberta_zh_L-24_H-1024_A-16/vocab.txt'
-if len(sys.argv) == 2:
-    model_path = sys.argv[1]
-else:
-    from keras_bert.datasets import get_pretrained, PretrainedList
-
-    model_path = get_pretrained(PretrainedList.chinese_base)
-paths = get_checkpoint_paths(model_path)
-config_path = paths.config
-checkpoint_path = paths.checkpoint
-dict_path = paths.vocab
+maxlen = 100
+base = 'D:/data/bert/chinese_wwm_ext_L-12_H-768_A-12/'
+config_path = base + 'bert_config.json'
+checkpoint_path = base + 'bert_model.ckpt'
+dict_path = base + 'vocab.txt'
+# if len(sys.argv) == 2:
+#     model_path = sys.argv[1]
+# else:
+#     from keras_bert.datasets import get_pretrained, PretrainedList
+#
+#     model_path = get_pretrained(PretrainedList.chinese_base)
+# paths = get_checkpoint_paths(model_path)
+# config_path = paths.config
+# checkpoint_path = paths.checkpoint
+# dict_path = paths.vocab
 
 token_dict = {}
 with codecs.open(dict_path, 'r', 'utf8') as reader:
@@ -254,7 +255,7 @@ def run_cv():
         bert_model = get_model()
         if j == 0:
             print(bert_model.summary())
-        checkpointer = ModelCheckpoint(filepath="data/checkpoint_%d.hdf5" % (j),
+        checkpointer = ModelCheckpoint(filepath="models/checkpoint_%d.hdf5" % (j),
                                        monitor='val_acc', verbose=True,
                                        save_best_only=True, mode='auto')
         early = EarlyStopping(monitor='val_acc', patience=1, verbose=0, mode='auto')
