@@ -12,7 +12,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import classification_report, accuracy_score, f1_score
-
+import ipykernel
 
 def token(text):
     """
@@ -120,25 +120,37 @@ def create_text_cnn():
     return model
 
 
-model = create_text_cnn()
-model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
-              metrics=['acc'])
-model.summary()
-checkpoint = ModelCheckpoint(filepath='models/cnn_text.h5', monitor='val_loss',
-                             verbose=1, save_best_only=True)
-history = model.fit(x_train, y_train,
-                    validation_data=(x_train, y_train),
-                    epochs=20, batch_size=32,
-                    callbacks=[checkpoint])
+train_pred = np.zeros((len(train), 2))
+test_pred = np.zeros((len(test), 2))
 
+skf = StratifiedKFold(n_splits=5, random_state=52, shuffle=True)
+for i, (train_index, valid_index) in enumerate(skf.split(x_train, train['label'])):
+    print("n@{} fold".format(i + 1))
+    X_train = x_train[train_index]
+    X_valid = x_train[valid_index]
+    y_tr = y_train[train_index]
+    y_val = y_train[valid_index]
 
-def predict():
-    model.load_weights('models/cnn_text.h5')
-    preds = model.predict(x_test)
-    labels = np.argmax(preds, axis=1)
-    sub['label'] = labels
-    sub.to_csv('result/cnn.csv', index=None)
+    model = create_text_cnn()
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='rmsprop',
+                  metrics=['acc'])
+    model.summary()
+    checkpoint = ModelCheckpoint(filepath='models/cnn_text_{}.h5'.format(i + 1), monitor='val_loss',
+                                 verbose=1, save_best_only=True)
+    history = model.fit(X_train, y_tr,
+                        validation_data=(X_valid, y_val),
+                        epochs=10, batch_size=32,
+                        callbacks=[checkpoint])
 
+    # model.load_weights('models/cnn_text.h5')
+    train_pred[valid_index, :] = model.predict(X_valid)
+    test_pred += model.predict(x_test)
 
-predict()
+labels = np.argmax(test_pred, axis=1)
+sub['label'] = labels
+sub.to_csv('result/cnn.csv', index=None)
+labels = np.argmax(train_pred, axis=1)
+train['pred'] = labels
+train.to_excel('result/train.xlsx', index=None)
+print(classification_report(train['label'].values,train['pred'].values))
