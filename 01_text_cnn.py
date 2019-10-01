@@ -56,7 +56,7 @@ test['label'] = [-1 for i in range(len(test))]
 df = pd.concat([train, test], sort=False)
 df['token_text'] = df['comment'].apply(lambda x: token(x))
 texts = df['token_text'].values.tolist()
-# train_w2v(texts)
+train_w2v(texts)
 
 # 构建词汇表
 tokenizer = Tokenizer()
