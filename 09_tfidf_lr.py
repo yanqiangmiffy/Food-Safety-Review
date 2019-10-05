@@ -52,10 +52,15 @@ n = train.shape[0]
 # use_idf：默认为True，权值是tf*idf，如果设为False，将不使用idf，就是只使用tf，相当于CountVectorizer了
 # smooth_idf：idf平滑参数，默认为True，idf=ln((文档总数+1)/(包含该词的文档数+1))+1，如果设为False，idf=ln(文档总数/包含该词的文档数)+1
 # sublinear_tf：默认为False，如果设为True，则替换tf为1 + log(tf)。
-vec = TfidfVectorizer(ngram_range=(1, 2), min_df=3, max_df=0.9, use_idf=1, smooth_idf=1, sublinear_tf=1)
+vec = TfidfVectorizer(ngram_range=(2, 2), min_df=3, max_df=0.9, use_idf=1, smooth_idf=1, sublinear_tf=1)
 vec.fit(df[column])
+print(vec.get_feature_names())
 trn_term_doc = vec.transform(train[column])
 test_term_doc = vec.transform(test[column])
+# matrix=trn_term_doc.todense().tolist()
+# print(type(matrix))
+# for i in matrix[0]:
+#     print(i)
 print(trn_term_doc.shape)
 print(test_term_doc.shape)  # 提取特征的维度
 

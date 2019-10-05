@@ -191,6 +191,11 @@ base = 'D:/data/bert/chinese_wwm_ext_L-12_H-768_A-12/'
 config_path = base + 'bert_config.json'
 checkpoint_path = base + 'bert_model.ckpt'
 dict_path = base + 'vocab.txt'
+
+# base = 'D:/data/bert/albert_large_zh/'
+# config_path = base + 'albert_config_large.json'
+# checkpoint_path = base + 'albert_model.ckpt'
+# dict_path = base + 'vocab.txt'
 # if len(sys.argv) == 2:
 #     model_path = sys.argv[1]
 # else:
@@ -224,10 +229,12 @@ def run_cv():
 
     # all_data['text'] = all_data['title'].astype(str) + ' ' + all_data['content'].astype(str)
     train_data = train[['comment', 'label']]
+    train['comment']=train_data['comment'].apply(lambda x: pre_process(x))
     train_data['comment'] = train_data['comment'].apply(lambda x: ''.join(str(x).split(' ')))
     train_data.columns = ['comment', 'label']
 
     test = test[['id', 'comment']]
+    test['comment']=test['comment'].apply(lambda x: pre_process(x))
     test['comment'] = test['comment'].apply(lambda x: ''.join(str(x).split(' ')))
     test.columns = ['id', 'comment']
 
