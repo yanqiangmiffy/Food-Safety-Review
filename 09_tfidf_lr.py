@@ -65,10 +65,11 @@ print(trn_term_doc.shape)
 print(test_term_doc.shape)  # 提取特征的维度
 
 y = (train["label"] - 1).astype(int)
+print(y)
 clf = LogisticRegression(C=4, dual=True)
 clf.fit(trn_term_doc, y)
 test_pred = clf.predict_proba(test_term_doc)
-
+print(test_pred)
 # 生成提交结果
 labels = np.argmax(test_pred, axis=1)
 sub['label'] = labels
