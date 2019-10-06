@@ -220,8 +220,8 @@ def create_d2v_input():
 
 
 if __name__ == '__main__':
-    create_bert_input()
+    # create_bert_input()
     create_tfidf_input()
     create_w2v_input()
     create_d2v_input()
-    create_lda_input()
+    # create_lda_input()
