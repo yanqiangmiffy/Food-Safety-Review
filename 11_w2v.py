@@ -59,32 +59,6 @@ def get_w2v_feas():
     w2v_model.train(texts_list, total_examples=w2v_model.corpus_count, epochs=w2v_model.epochs)
     w2v_model.save('tmp/w2v_300d.model')
 
-    # qdf=pd.DataFrame()
-    # for query in tqdm(df['query_list']):
-    #     data=np.mean([w2v_model.wv[word] for word in eval(query)],axis=0).reshape(1,-1)
-    #     tmp=pd.DataFrame(data)
-    #     qdf=qdf.append(tmp)
-    # qdf.columns=['qw_'+str(i) for i in range(50)]
-    # qdf.to_csv('q_w2v_feas.csv')
-
-    # tdf=pd.DataFrame()
-
-    # for title in tqdm(df['title_list']):
-    #     data=np.mean([w2v_model.wv[word] for word in eval(title)],axis=0).reshape(1,-1)
-    #     tmp=pd.DataFrame(data)
-    #     tdf=tdf.append(tmp)
-    # tdf.columns=['tw_'+str(i) for i in range(50)]
-    # tdf.to_csv('t_w2v_feas.csv')
-    # tmp=[]
-    # for query in tqdm(df['query_list']):
-    #     # data=np.mean([w2v_model.wv[word] for word in eval(query)],axis=0).reshape(1,-1)
-    #     # tmp=pd.DataFrame(data)
-    #     # qdf=qdf.append(tmp)
-    #     val=np.mean([w2v_model.wv[word] for word in eval(query)])
-    #     tmp.append(val)
-    # df['qw2v_mean'] = df['query_list'].apply(lambda x: np.mean([w2v_model.wv[word] for word in eval(x)]))
-    # df['tw2v_mean'] = df['title_list'].apply(lambda x: np.mean([w2v_model.wv[word] for word in eval(x)]))
-    # df.to_csv('yanqiang/df.csv',index=None)
 
     train_vecs = []
     test_vecs = []
