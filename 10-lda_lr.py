@@ -5,7 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import time
 import jieba
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold,StratifiedKFold
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.metrics import f1_score, classification_report
 from sklearn import linear_model
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     train_pred = np.zeros((len(train), 2))
     test_pred = np.zeros((len(test), 2))
 
-    kf = KFold(5, shuffle=True, random_state=42)
+    kf = StratifiedKFold(5, shuffle=True, random_state=42)
     cv_lr_f1, cv_lrsgd_f1, cv_svcsgd_f1, = [], [], []
 
     for train_ind, val_ind in kf.split(X, y):
@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
         train_pred[val_ind, :] = lr.predict_proba(X_val)
         test_pred += lr.predict_proba(test_data)
-
+        print(lr.predict_proba(test_data))
         y_pred = sgd_huber.predict(X_val_scale)
         cv_svcsgd_f1.append(f1_score(y_val, y_pred, average='binary'))
 
