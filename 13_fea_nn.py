@@ -239,7 +239,7 @@ for i, (train_index, valid_index) in enumerate(skf.split(X, train['label'])):
                                  verbose=1, save_best_only=True)
     history = model.fit([X_train, X_bert_train, X_fea_train], y_tr,
                         validation_data=([X_valid, X_bert_valid, X_fea_valid], y_val),
-                        epochs=15, batch_size=32,
+                        epochs=10, batch_size=32,
                         callbacks=[checkpoint])
 
     # model.load_weights('models/cnn_text.h5')

@@ -18,3 +18,4 @@ O2O商铺食品安全相关评论发现
 - doc2vec 0.52 
 - fei-02-capsule.py 0.904
 - stack 0.9174
+- fea nn 0.912
