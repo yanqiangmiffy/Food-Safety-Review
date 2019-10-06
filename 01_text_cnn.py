@@ -170,3 +170,4 @@ train['pred'] = labels
 train.to_excel('result/train.xlsx', index=None)
 print(classification_report(train['label'].values, train['pred'].values))
 print(f1_score(train['label'].values, train['pred'].values))
+

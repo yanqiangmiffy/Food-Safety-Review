@@ -56,6 +56,7 @@ vec = TfidfVectorizer(ngram_range=(2, 2), min_df=3, max_df=0.9, use_idf=1, smoot
 vec.fit(df[column])
 print(vec.get_feature_names())
 trn_term_doc = vec.transform(train[column])
+print(type(trn_term_doc),np.array(trn_term_doc.todense()))
 test_term_doc = vec.transform(test[column])
 # matrix=trn_term_doc.todense().tolist()
 # print(type(matrix))
@@ -68,7 +69,7 @@ y = (train["label"] - 1).astype(int)
 clf = LogisticRegression(C=4, dual=True)
 clf.fit(trn_term_doc, y)
 test_pred = clf.predict_proba(test_term_doc)
-
+print(test_pred)
 # 生成提交结果
 labels = np.argmax(test_pred, axis=1)
 sub['label'] = labels
