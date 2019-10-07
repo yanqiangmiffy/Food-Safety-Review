@@ -219,6 +219,14 @@ def create_d2v_input():
         np.save("tmp/feas/d2v_{}_x_test.npy".format(str(size)), d2v_x_test)
 
 
+def create_artificial_feature():
+    def load_neg_words():
+        pass
+
+    def load_pos_words():
+        pass
+
+
 if __name__ == '__main__':
     # create_bert_input()
     create_tfidf_input()

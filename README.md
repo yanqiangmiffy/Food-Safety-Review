@@ -19,3 +19,4 @@ O2O商铺食品安全相关评论发现
 - fei-02-capsule.py 0.904
 - stack 0.9174
 - fea nn 0.912
+- bert max_len 0.937 batch_size 8
