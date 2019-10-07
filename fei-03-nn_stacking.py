@@ -18,7 +18,7 @@ concat = [
           bert,
           bi_rnn[['label']],
           capsule[['label']],
-          cnn[['label']],
+          cnn[['label']],cnn[['label']],cnn[['label']],cnn[['label']],cnn[['label']],
           cnn1[['label']],
           fasttext[['label']],
           han[['label']],

@@ -16,7 +16,13 @@ O2O商铺食品安全相关评论发现
 - lda 0.38
 - word2vec 0.58
 - doc2vec 0.52 
+<<<<<<< HEAD
 - fei-02-capsule.py 0.904
 - stack 0.9174
 - fea nn 0.912
 - bert max_len 0.937 batch_size 8
+=======
+- fei-02-capsule 0.904
+- stack 0.920
+- fea nn 0.912
+>>>>>>> b583498d7e2f9abc8df7c62fcdeb94a264996bee
