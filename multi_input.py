@@ -89,14 +89,20 @@ def create_bert_input():
     else:
         from keras_bert.datasets import get_pretrained, PretrainedList
         model_path = get_pretrained(PretrainedList.chinese_base)
-
     paths = get_checkpoint_paths(model_path)
-
     model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, seq_len=None)
     model.summary(line_length=120)
-
     token_dict = load_vocabulary(paths.vocab)
     tokenizer = Tokenizer(token_dict)
+
+    # base = 'D:/data/bert/chinese_wwm_ext_L-12_H-768_A-12/'
+    # config_path = base + 'bert_config.json'
+    # checkpoint_path = base + 'bert_model.ckpt'
+    # dict_path = base + 'vocab.txt'
+    # model = load_trained_model_from_checkpoint(config_path, checkpoint_path, seq_len=None)
+    # model.summary(line_length=120)
+    # token_dict = load_vocabulary(dict_path)
+    # tokenizer = Tokenizer(token_dict)
 
     all_vecs = []
     for text in tqdm(df.comment):
@@ -228,7 +234,7 @@ def create_artificial_feature():
 
 
 if __name__ == '__main__':
-    # create_bert_input()
+    create_bert_input()
     create_tfidf_input()
     create_w2v_input()
     create_d2v_input()
