@@ -41,6 +41,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import time
 import jieba
 import os
+from snownlp import SnowNLP
 
 
 def token(text):
@@ -226,16 +227,92 @@ def create_d2v_input():
 
 
 def create_artificial_feature():
+    artificial_features = {}
+
     def load_neg_words():
-        pass
+        words = []
+        words += open('dict/negative/negative.txt', 'r', encoding='utf-8').read().split('\n')
+        words += open('dict/negative/NTUSD_negative_simplified.txt', 'r', encoding='utf-8').read().split('\n')
+        words += open('dict/negative/负面情感词语（中文）.txt', 'r', encoding='utf-8').read().split('\n')
+        words += open('dict/negative/负面评价词语（中文）.txt', 'r', encoding='utf-8').read().split('\n')
+        return list(set(words))
 
     def load_pos_words():
-        pass
+        words = []
+        words += open('dict/positive/NTUSD_positive_simplified.txt', 'r', encoding='utf-8').read().split('\n')
+        words += open('dict/positive/positive.txt', 'r', encoding='utf-8').read().split('\n')
+        words += open('dict/positive/正面情感词语（中文）.txt', 'r', encoding='utf-8').read().split('\n')
+        words += open('dict/positive/正面评价词语（中文）.txt', 'r', encoding='utf-8').read().split('\n')
+        return list(set(words))
+
+    # 情感词汇统计
+    negative_words = load_neg_words()
+    positive_words = load_pos_words()
+    neg_cnt = []
+    pos_cnt = []
+    for text in df.comment:
+        n_cnt = 0
+        p_cnt = 0
+        for w in negative_words:
+            if w in text:
+                n_cnt += 1
+        for w in positive_words:
+            if w in text:
+                p_cnt += 1
+        neg_cnt.append(n_cnt)
+        pos_cnt.append(p_cnt)
+    artificial_features['neg_cnt'] = neg_cnt
+    artificial_features['pos_cnt'] = pos_cnt
+    # 长度统计
+    char_lens = []
+    for text in df.comment:
+        char_lens.append(len(text))
+    word_lens = []
+    for text in texts_list:
+        word_lens.append(len(text))
+    artificial_features['char_lens'] = char_lens
+    artificial_features['word_lens'] = word_lens
+
+    sentiments_list = []
+    for text in df.comment:
+        sn = SnowNLP(text)
+        sentiments_list.append(sn.sentiments)
+    artificial_features['sentiments_list'] = sentiments_list
+
+    # 特殊词汇
+    special_tokens = ['蟑螂', '虫', '拉肚子',
+                      '臭', '脏', '反胃', '吐',
+                      '生的', '难吃', '馊', '霉',
+                      '钢丝', '铁丝', '不新鲜',
+                      '苍蝇', '小强', '头发', '坏',
+                      '异味', '毛', '怪味', '不舒服',
+                      '不卫生', '艹', '滚', '你妈',
+                      '我草']
+    for w in special_tokens:
+        is_in = []
+        for text in df.comment:
+            if w in text:
+                is_in.append(1)
+            else:
+                is_in.append(0)
+        artificial_features['token_' + w] = is_in
+
+    all_vecs = pd.DataFrame(artificial_features)
+    print(all_vecs.columns)
+    print(all_vecs.shape)
+    all_vecs.to_csv('ati.csv', index=None)
+    af_x_train = np.array(all_vecs[:train_size].values)
+    af_x_test = np.array(all_vecs[train_size:].values)
+    print('Shape of train data tensor:', af_x_train.shape)
+    print('Shape of test data tensor:', af_x_test.shape)
+    np.save("tmp/feas/af_x_train.npy", af_x_train)
+    np.save("tmp/feas/af_x_test.npy", af_x_test)
 
 
 if __name__ == '__main__':
-    create_bert_input()
-    create_tfidf_input()
-    create_w2v_input()
-    create_d2v_input()
+    # create_bert_input()
+    # create_tfidf_input()
+    # create_w2v_input()
+    # create_d2v_input()
     # create_lda_input()
+    create_artificial_feature()

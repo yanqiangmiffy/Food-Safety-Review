@@ -143,8 +143,12 @@ print("lda_x_test.shape:", lda_x_test.shape)
 features_x_train = np.hstack((d2v_50_x_train, w2v_50_x_train, lda_x_train))
 features_x_test = np.hstack((d2v_50_x_test, w2v_50_x_test, lda_x_test))
 print("features_x_train.shape:", features_x_train.shape)
-print("x_features_test.shape:", features_x_test.shape)
+print("features_x_test.shape:", features_x_test.shape)
 
+af_x_train = np.load(open('tmp/feas/af_x_train.npy', 'rb'))
+af_x_test = np.load(open('tmp/feas/af_x_test.npy', 'rb'))
+print("af_x_train.shape:", af_x_train.shape)
+print("af_x_test.shape:", af_x_test.shape)
 
 # 创建embedding_layer
 def create_embedding(word_index, w2v_file):
@@ -191,9 +195,13 @@ def create_text_cnn():
     # tfidf lda w2v doc2vec
     features_input = Input(shape=(108,))
     features_dense = BatchNormalization()(features_input)
-    features_dense = Dense(64, activation='relu')(features_dense)
+    features_dense = Dense(128, activation='relu')(features_dense)
 
-    merged = concatenate([l_lstm, bert_dense, features_dense])
+    af_input = Input(shape=(32,))
+    af_dense = BatchNormalization()(af_input)
+    af_dense = Dense(16, activation='relu')(af_dense)
+
+    merged = concatenate([l_lstm, bert_dense, features_dense,af_dense])
     merged = Dropout(0.5)(merged)
     merged = BatchNormalization()(merged)
 
@@ -206,7 +214,7 @@ def create_text_cnn():
     merged = BatchNormalization()(merged)
 
     output = Dense(2, activation='softmax')(merged)
-    merge_model = Model(inputs=[seq_input, bert_input, features_input], outputs=output)
+    merge_model = Model(inputs=[seq_input, bert_input, features_input,af_input], outputs=output)
     return merge_model
 
 
@@ -225,6 +233,9 @@ for i, (train_index, valid_index) in enumerate(skf.split(X, train['label'])):
     X_fea_train = features_x_train[train_index]
     X_fea_valid = features_x_train[valid_index]
 
+    X_af_train = af_x_train[train_index]
+    X_af_valid = af_x_train[valid_index]
+
     y_tr = y[train_index]
     y_val = y[valid_index]
 
@@ -237,14 +248,16 @@ for i, (train_index, valid_index) in enumerate(skf.split(X, train['label'])):
     checkpoint = ModelCheckpoint(filepath='models/feann_text_{}.h5'.format(i + 1),
                                  monitor='val_loss',
                                  verbose=1, save_best_only=True)
-    history = model.fit([X_train, X_bert_train, X_fea_train], y_tr,
-                        validation_data=([X_valid, X_bert_valid, X_fea_valid], y_val),
+    tr_data=[X_train, X_bert_train, X_fea_train,X_af_train]
+    va_data=[X_valid, X_bert_valid, X_fea_valid,X_af_valid]
+    history = model.fit(tr_data, y_tr,
+                        validation_data=(va_data, y_val),
                         epochs=10, batch_size=32,
                         callbacks=[checkpoint])
 
     # model.load_weights('models/cnn_text.h5')
-    train_pred[valid_index, :] = model.predict([X_valid, X_bert_valid, X_fea_valid])
-    test_pred += model.predict([x_test, bert_x_test, features_x_test])
+    train_pred[valid_index, :] = model.predict([X_valid, X_bert_valid, X_fea_valid,X_af_valid])
+    test_pred += model.predict([x_test, bert_x_test, features_x_test,af_x_test])
 
 labels = np.argmax(test_pred, axis=1)
 sub['label'] = labels
