@@ -245,24 +245,37 @@ def create_artificial_feature():
         words += open('dict/positive/正面评价词语（中文）.txt', 'r', encoding='utf-8').read().split('\n')
         return list(set(words))
 
+    def load_no_words():
+        words = []
+        words += open('dict/否定词.txt', 'r', encoding='utf-8').read().split('\n')
+        return words
+
     # 情感词汇统计
     negative_words = load_neg_words()
     positive_words = load_pos_words()
+    no_words = load_no_words()
     neg_cnt = []
     pos_cnt = []
+    no_cnts = []
     for text in df.comment:
         n_cnt = 0
         p_cnt = 0
+        no_cnt = 0
         for w in negative_words:
             if w in text:
                 n_cnt += 1
         for w in positive_words:
             if w in text:
                 p_cnt += 1
+        for w in positive_words:
+            if w in text:
+                n_cnt += 1
         neg_cnt.append(n_cnt)
         pos_cnt.append(p_cnt)
+        no_cnts.append(n_cnt)
     artificial_features['neg_cnt'] = neg_cnt
     artificial_features['pos_cnt'] = pos_cnt
+    artificial_features['no_cnts'] = no_cnts
     # 长度统计
     char_lens = []
     for text in df.comment:
@@ -280,15 +293,19 @@ def create_artificial_feature():
     artificial_features['sentiments_list'] = sentiments_list
 
     # 特殊词汇
-    special_tokens = ['蟑螂', '虫', '拉肚子',
+    special_tokens = ['蟑螂', '虫', '苍蝇', '小强',
+                      '拉肚子', '死', '恶心', '咸',
                       '臭', '脏', '反胃', '吐',
+                      '泻', '疼',
                       '生的', '难吃', '馊', '霉',
                       '钢丝', '铁丝', '不新鲜',
-                      '苍蝇', '小强', '头发', '坏',
+                      '头发', '坏', '糊味', '差',
+                      '酸', '冷', '硬', '风干', '牛逼',
                       '异味', '毛', '怪味', '不舒服',
                       '不卫生', '艹', '滚', '你妈',
-                      '我草']
-    for w in special_tokens:
+                      '我草', '没烤熟',
+                      '不熟', '烂', '剩'] + no_words
+    for w in tqdm(special_tokens):
         is_in = []
         for text in df.comment:
             if w in text:
@@ -298,6 +315,11 @@ def create_artificial_feature():
         artificial_features['token_' + w] = is_in
 
     all_vecs = pd.DataFrame(artificial_features)
+    all_vecs = all_vecs.ix[:, (all_vecs != all_vecs.ix[0]).any()]  # 删除一列值为唯一的列
+    # for col in tqdm(all_vecs.columns):
+    #     if len(all_vecs[col].unique())==1:
+    #         print(col)
+    # all_vecs.drop(columns=col,inplace=True)
     print(all_vecs.columns)
     print(all_vecs.shape)
     all_vecs.to_csv('ati.csv', index=None)

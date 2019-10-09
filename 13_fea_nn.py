@@ -197,9 +197,9 @@ def create_text_cnn():
     features_dense = BatchNormalization()(features_input)
     features_dense = Dense(128, activation='relu')(features_dense)
 
-    af_input = Input(shape=(32,))
+    af_input = Input(shape=(62,))
     af_dense = BatchNormalization()(af_input)
-    af_dense = Dense(16, activation='relu')(af_dense)
+    af_dense = Dense(32, activation='relu')(af_dense)
 
     merged = concatenate([l_lstm, bert_dense, features_dense,af_dense])
     merged = Dropout(0.5)(merged)
