@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-
 bert = pd.read_csv('./result/bert.csv')
+fea_nn = pd.read_csv('./result/fea_nn.csv')
 bi_rnn = pd.read_csv('./result/bi_rnn.csv')
 capsule = pd.read_csv('./result/capsule.csv')
 cnn = pd.read_csv('./result/cnn.csv')
@@ -15,18 +15,20 @@ rnn = pd.read_csv('./result/rnn.csv')
 bi_gru = pd.read_csv('./result/bi_gru.csv')
 
 concat = [
-          bert,
-          bi_rnn[['label']],
-          capsule[['label']],
-          cnn[['label']],cnn[['label']],cnn[['label']],cnn[['label']],cnn[['label']],
-          cnn1[['label']],
-          fasttext[['label']],
-          han[['label']],
-          lr[['label']],
-          rcnnv[['label']],
-          rnn[['label']],
-          bi_gru[['label']]
-         ]
+    bert,
+    bert[['label']],bert[['label']],bert[['label']],bert[['label']],
+    bi_rnn[['label']],
+    capsule[['label']],
+    cnn[['label']],
+    # cnn1[['label']],
+    # fasttext[['label']],
+    han[['label']],
+    # lr[['label']],
+    rcnnv[['label']],
+    rnn[['label']],
+    bi_gru[['label']],
+    fea_nn[['label']]
+]
 bert = pd.concat(concat, axis=1)
 
 b_value = bert.values
@@ -39,7 +41,3 @@ id = bert.values[:, 0]
 stack = pd.DataFrame({'id': id, 'label': b_value})
 
 stack.to_csv('result/stack.csv', index=None)
-
-
-
-
